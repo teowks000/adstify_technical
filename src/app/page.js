@@ -1,7 +1,5 @@
 "use client";
-import Image from "next/image";
-import ApplicantList from "./ApplicantList";
-import { useState, useEffect } from "react";
+import Link from 'next/link'
 
 const JobApplication = () => {
   const jobDescription = [
@@ -82,42 +80,36 @@ const JobApplication = () => {
       </ol>
     );
   };
+  
 
   return (
-    // <ApplicantList />
-    <div className="flex flex-col min-h-screen justify-between">
+    <div className="flex flex-col min-h-screen justify-between bg-gray-100">
       <div className="flex justify-center py-10 ">
-        <Image
+        <img
           src="/favicon.ico"
           alt="Company Logo"
-          width={150}
-          height={150}
           className="object-contain"
         />
       </div>
 
-      {/* Middle Section - Job Description */}
-      <div className="flex-grow flex flex-col  justify-center px-6 lg:px-24">
-        <h1 className=" text-2xl lg:text-3xl font-bold text-gray-800 mb-10 text-center ">
+      <div className="flex-grow flex flex-col px-6 lg:p-24">
+        <h1 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-10 text-center">
           Front-End Developer
         </h1>
-        <div>
+        {/* <div className="flex flex-col"> */}
           <p className="font-bold underline text-lg">Key Responsibilities: </p>
-        </div>
-        {renderJobDescription()}
-        <div>
+          {renderJobDescription()}
           <p className="font-bold underline text-lg">Requirements: </p>
-        </div>
-        {renderRequirement()}
+          {renderRequirement()}
+        {/* </div> */}
       </div>
-      {/* Bottom Section - Buttons */}
+
       <div className="flex justify-center content-center mb-2">
-        <button
-          onClick={() => {}}
-          className="w-3/4 font-bold mx-3 bg-green-400 text-white px-6 py-3 rounded-md hover:bg-blue-700 transition-all"
-        >
+       <Link className="w-3/4 font-bold mx-3 text-center bg-green-400 text-white px-6 py-3 rounded-md hover:bg-blue-700" href="./ApplicantList/">
+       <button>
           Check Applicant
         </button>
+        </Link>
       </div>
     </div>
   );

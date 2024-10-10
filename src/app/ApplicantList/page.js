@@ -1,13 +1,18 @@
+"use client";
 import React, { useEffect, useState } from "react";
-import ProfileCard from "./components/ProfileCard";
+import ProfileCard from "../components/ProfileCard";
 
-export default function Home() {
+const ApplicantList = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [applicantIndex, setApplicantIndex] = useState(null);
-  const [page, setPage] = useState(1);
+  const [initArray, setInitArray] = useState(null); // should cache but I dont have time to do it sorry
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const fetchUsers = async () => {
     try {
@@ -15,14 +20,15 @@ export default function Home() {
       const response = await fetch(url);
       const data = await response.json();
 
-      // Check if data.results is an array before setting users
       if (Array.isArray(data.results)) {
-        setUsers(data.results); // Store the user data in state
+        console.log("yo");
+        setUsers(data.results);
+        setInitArray(data.results);
       } else {
         console.error("API response is not as expected", data);
       }
 
-      setLoading(false); // Turn off the loading state
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching users:", error);
       setLoading(false);
@@ -38,10 +44,6 @@ export default function Home() {
     setSelectedApplicant(null);
   };
 
-  useEffect(() => {
-    fetchUsers();
-  }, [page]);
-
   if (loading) {
     return (
       <div className="flex items-center justify-center bg-green-100 min-h-screen">
@@ -56,14 +58,57 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-200 p-6">
-      <div className="flex items-center min-h-20 text-2xl pl-5">
-        <h1 className="font-bold mr-2">Total: </h1>
-        <h1>{users.length} Job Applicant(s)</h1>
+      <div className=" flex flex-grow">
+        <div className="flex flex-grow items-center min-h-20 text-2xl pl-5">
+          <h1 className="font-bold mr-2">Total: </h1>
+          <h1>{users.length} Job Applicant(s)</h1>
+        </div>
+        <div className="flex-grow py-5">
+          <input
+            type="text"
+            id="serach_input"
+            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            placeholder="Search"
+            onChange={(text) => {
+              if (text && text.target.value != "") {
+                // if got input
+                let filteredArray = [];
+
+                if (initArray.length > 0) {
+                  for (let i = 0; i < initArray.length; i++) {
+                    if (
+                      initArray[i].name.first
+                        .toLowerCase()
+                        .includes(text.target.value.toLowerCase()) ||
+                      initArray[i].name.last
+                        .toLowerCase()
+                        .includes(text.target.value.toLowerCase())
+                    ) {
+                      filteredArray.push(initArray[i]);
+                    }
+                  }
+                }
+
+                if (filteredArray.length > 0) {
+                  // if got matching
+                  setUsers(filteredArray);
+                } else {
+                  // if no matching
+                  alert("No matching applicant found");
+                }
+              } else {
+                // if delete and backspace until no input (set back to the data we cached)
+                setUsers(initArray);
+              }
+            }}
+          />
+        </div>
+        <div></div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
         {users.map((user, index) => (
           <ProfileCard
-            index={index}
+            key={index}
             profilePicture={user.picture.large}
             firstName={user.name.first}
             lastName={user.name.last}
@@ -140,4 +185,6 @@ export default function Home() {
       ) : null}
     </div>
   );
-}
+};
+
+export default ApplicantList;
